@@ -1,21 +1,35 @@
-const appointmentFacade = require('./appointment-facade');
+const appointmentRepository = require('./appointment-repository');
 
 class AppointmentController {
-    // Corresponde a la operación POST /citas del contrato OpenAPI
     async crearCita(req, res) {
         try {
             const datosCita = req.body;
+            const nuevaCita = await appointmentRepository.guardar(datosCita);
             
-            // Delegamos el flujo principal a la fachada
-            const nuevaCita = await appointmentFacade.registrarCita(datosCita);
-            
-            // Retornamos 201 y el esquema CitaResponse
             res.status(201).json(nuevaCita);
         } catch (error) {
-            // Manejo de error estructurado (previene Information Disclosure)
-            res.status(400).json({ 
-                codigo: "ERR_BAD_REQUEST", 
-                mensaje: "Datos inválidos o error en el proceso" 
+            console.error("Error real en la BD:", error);
+            res.status(400).json({
+                codigo: "ERR_BAD_REQUEST",
+                mensaje: "Datos inválidos o error en el proceso"
+            });
+        }
+    }
+
+    async obtenerCitas(req, res) {
+        try {
+            const citas = await appointmentRepository.listarTodos();
+            
+            res.status(200).json({
+                codigo: "SUCCESS",
+                mensaje: "Citas recuperadas exitosamente",
+                data: citas
+            });
+        } catch (error) {
+            console.error("Error al obtener las citas:", error);
+            res.status(500).json({
+                codigo: "ERR_INTERNAL",
+                mensaje: "Error interno al consultar la base de datos"
             });
         }
     }
