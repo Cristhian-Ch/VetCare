@@ -11,6 +11,7 @@ app.use(express.json());
 
 // Importar controladores y middlewares personalizados
 const appointmentController = require('./gestion-citas/appointment-controller');
+const clientController = require('./gestion-clientes/client-controller'); // NUEVO MÓDULO DE CLIENTES
 const { verificarToken } = require('./middlewares/auth-middleware');
 const { validarCreacionCita } = require('./middlewares/validation-middleware');
 
@@ -19,13 +20,27 @@ app.get('/api/v1/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date() });
 });
 
-// Endpoints del módulo de Gestión de Citas
+// ==========================================
+// ENDPOINTS DEL MÓDULO DE GESTIÓN DE CITAS
+// ==========================================
 app.post('/api/v1/citas', verificarToken, validarCreacionCita, (req, res) => appointmentController.crearCita(req, res));
 app.get('/api/v1/citas', verificarToken, (req, res) => appointmentController.obtenerCitas(req, res));
 app.put('/api/v1/citas/:id', verificarToken, (req, res) => appointmentController.actualizarCita(req, res));
-
-// NUEVA RUTA DELETE: Eliminar una cita por su ID (Protegida por token)
 app.delete('/api/v1/citas/:id', verificarToken, (req, res) => appointmentController.eliminarCita(req, res));
+
+// ==========================================
+// ENDPOINTS DEL MÓDULO DE CLIENTES (NUEVO)
+// ==========================================
+app.post('/api/v1/clientes', verificarToken, (req, res) => clientController.crearCliente(req, res));
+app.get('/api/v1/clientes', verificarToken, (req, res) => clientController.obtenerClientes(req, res));
+
+// ==========================================
+// ENDPOINTS DEL MÓDULO DE CLIENTES
+// ==========================================
+app.post('/api/v1/clientes', verificarToken, (req, res) => clientController.crearCliente(req, res));
+app.get('/api/v1/clientes', verificarToken, (req, res) => clientController.obtenerClientes(req, res));
+app.put('/api/v1/clientes/:id', verificarToken, (req, res) => clientController.actualizarCliente(req, res)); // NUEVA
+app.delete('/api/v1/clientes/:id', verificarToken, (req, res) => clientController.eliminarCliente(req, res)); // NUEVA
 
 // INICIAR EL SERVIDOR
 app.listen(PORT, () => {
