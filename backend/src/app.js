@@ -13,6 +13,11 @@ app.use(express.json());
 app.get('/api/v1/health', (req, res) => {
     res.json({ estado: 'ok', mensaje: 'Servidor VetCare (Monolito Modular) en ejecución' });
 });
+// Importar controladores de módulos
+const appointmentController = require('./gestion-citas/appointment-controller');
+
+// Registrar los endpoints del contrato OpenAPI
+app.post('/api/v1/citas', (req, res) => appointmentController.crearCita(req, res));
 
 // Levantar el servidor
 app.listen(PORT, () => {
