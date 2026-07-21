@@ -31,12 +31,51 @@ class AppointmentRepository {
     }
 
     async listarTodos() {
-        // Consulta para traer todas las citas ordenadas de la más reciente a la más antigua
         const query = `SELECT * FROM t_cita ORDER BY fecha DESC, hora DESC`;
-        
         const [filas] = await pool.execute(query);
-        
         return filas;
+    }
+
+    async actualizar(citaId, datosCita) {
+        const query = `
+            UPDATE t_cita 
+            SET fecha = ?, hora = ?, motivo = ? 
+            WHERE cita_id = ?
+        `;
+        
+        const valores = [
+            datosCita.fecha,
+            datosCita.hora,
+            datosCita.motivo,
+            citaId
+        ];
+        
+        const [resultado] = await pool.execute(query, valores);
+        
+        if (resultado.affectedRows === 0) {
+            return null; 
+        }
+        
+        return {
+            citaId: citaId,
+            estado: 'actualizada',
+            fecha: datosCita.fecha,
+            hora: datosCita.hora,
+            motivo: datosCita.motivo
+        };
+    }
+
+    // NUEVO MÉTODO: Eliminar cita de la base de datos
+    async eliminar(citaId) {
+        const query = `DELETE FROM t_cita WHERE cita_id = ?`;
+        const [resultado] = await pool.execute(query, [citaId]);
+        
+        // Si affectedRows es 0, significa que el ID no existía
+        if (resultado.affectedRows === 0) {
+            return false;
+        }
+        
+        return true;
     }
 }
 
