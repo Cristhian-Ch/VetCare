@@ -5,21 +5,25 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middlewares
+// Middlewares globales
 app.use(cors());
 app.use(express.json());
 
-// Ruta base de prueba (Healthcheck)
-app.get('/api/v1/health', (req, res) => {
-    res.json({ estado: 'ok', mensaje: 'Servidor VetCare (Monolito Modular) en ejecución' });
-});
-// Importar controladores de módulos
+// Importar controladores y middlewares personalizados
 const appointmentController = require('./gestion-citas/appointment-controller');
+const { verificarToken } = require('./middlewares/auth-middleware');
 
-// Registrar los endpoints del contrato OpenAPI
-app.post('/api/v1/citas', (req, res) => appointmentController.crearCita(req, res));
-
-// Levantar el servidor
-app.listen(PORT, () => {
-    console.log(`Servidor de VetCare corriendo en http://localhost:${PORT}`);
+// Endpoint público de prueba de salud
+app.get('/api/v1/health', (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date() });
 });
+
+// Endpoints del módulo de Gestión de Citas (Protegido)
+app.post('/api/v1/citas', verificarToken, (req, res) => appointmentController.crearCita(req, res));
+
+// INICIAR EL SERVIDOR (Esta es la pieza que faltaba)
+app.listen(PORT, () => {
+    console.log(`🚀 Servidor corriendo y escuchando en el puerto ${PORT}`);
+});
+
+module.exports = app;
