@@ -10,10 +10,12 @@ app.use(cors());
 app.use(express.json());
 
 // Importar controladores y middlewares personalizados
+const petController = require('./gestion-mascotas/pet-controller'); // NUEVO MÓDULO DE MASCOTAS
 const appointmentController = require('./gestion-citas/appointment-controller');
 const clientController = require('./gestion-clientes/client-controller'); // NUEVO MÓDULO DE CLIENTES
 const { verificarToken } = require('./middlewares/auth-middleware');
 const { validarCreacionCita } = require('./middlewares/validation-middleware');
+
 
 // Endpoint público de prueba de salud
 app.get('/api/v1/health', (req, res) => {
@@ -41,6 +43,14 @@ app.post('/api/v1/clientes', verificarToken, (req, res) => clientController.crea
 app.get('/api/v1/clientes', verificarToken, (req, res) => clientController.obtenerClientes(req, res));
 app.put('/api/v1/clientes/:id', verificarToken, (req, res) => clientController.actualizarCliente(req, res)); // NUEVA
 app.delete('/api/v1/clientes/:id', verificarToken, (req, res) => clientController.eliminarCliente(req, res)); // NUEVA
+
+// ==========================================
+// ENDPOINTS DEL MÓDULO DE MASCOTAS 
+// ==========================================
+app.post('/api/v1/mascotas', verificarToken, (req, res) => petController.crearMascota(req, res));
+app.get('/api/v1/mascotas', verificarToken, (req, res) => petController.obtenerMascotas(req, res));
+app.put('/api/v1/mascotas/:id', verificarToken, (req, res) => petController.actualizarMascota(req, res));
+app.delete('/api/v1/mascotas/:id', verificarToken, (req, res) => petController.eliminarMascota(req, res));
 
 // INICIAR EL SERVIDOR
 app.listen(PORT, () => {
