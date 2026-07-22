@@ -1,0 +1,64 @@
+### Variables Globales
+@baseUrl = http://localhost:3000/api/v1
+
+# ==========================================
+# 1. MÓDULO DE AUTENTICACIÓN
+# ==========================================
+
+### Login de Administrador (Genera el Token)
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "correo": "admin@vetcare.com",
+    "password": "mipassword123"
+}
+
+### Capturamos el token automáticamente de la respuesta anterior
+@token = {{login.response.body.token}}
+
+
+# ==========================================
+# 2. MÓDULO DE CLIENTES
+# ==========================================
+
+### Listar todos los clientes
+GET {{baseUrl}}/clientes
+Authorization: Bearer {{token}}
+
+
+# ==========================================
+# 3. MÓDULO DE MASCOTAS
+# ==========================================
+
+### Listar todas las mascotas
+GET {{baseUrl}}/mascotas
+Authorization: Bearer {{token}}
+
+
+# ==========================================
+# 4. MÓDULO DE CITAS
+# ==========================================
+
+### Listar todas las citas agendadas
+GET {{baseUrl}}/citas
+Authorization: Bearer {{token}}
+
+
+# ==========================================
+# 5. MÓDULO DE PAGOS
+# ==========================================
+
+### Listar todos los pagos y facturación
+GET {{baseUrl}}/pagos
+Authorization: Bearer {{token}}
+
+
+# ==========================================
+# 6. MÓDULO DE HISTORIAL CLÍNICO
+# ==========================================
+
+### Listar historial (Nota: Reemplazar 'ID_DE_PRUEBA' por un UUID real de la tabla mascotas)
+GET {{baseUrl}}/historial/ID_DE_PRUEBA
+Authorization: Bearer {{token}}
