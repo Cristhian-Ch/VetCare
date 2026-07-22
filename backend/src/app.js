@@ -10,10 +10,11 @@ app.use(cors());
 app.use(express.json());
 
 // Importar controladores y middlewares personalizados
-const authController = require('./autenticacion/auth-controller'); // NUEVO MÓDULO AUTENTICACIÓN
-const petController = require('./gestion-mascotas/pet-controller'); // NUEVO MÓDULO DE MASCOTAS
+const notificationController = require('./notificaciones/notification-controller'); // MODULO NOTIFICACIONES
+const authController = require('./autenticacion/auth-controller'); // NUEVO MODULO AUTENTICACIÓN
+const petController = require('./gestion-mascotas/pet-controller'); // NUEVO MODULO DE MASCOTAS
 const appointmentController = require('./gestion-citas/appointment-controller');
-const clientController = require('./gestion-clientes/client-controller'); // NUEVO MÓDULO DE CLIENTES
+const clientController = require('./gestion-clientes/client-controller'); // NUEVO MODULO DE CLIENTES
 const { verificarToken } = require('./middlewares/auth-middleware');
 const { validarCreacionCita } = require('./middlewares/validation-middleware');
 
@@ -58,6 +59,12 @@ app.delete('/api/v1/mascotas/:id', verificarToken, (req, res) => petController.e
 // ==========================================
 app.post('/api/v1/auth/registro', (req, res) => authController.registrar(req, res));
 app.post('/api/v1/auth/login', (req, res) => authController.login(req, res));
+
+// ==========================================
+// ENDPOINTS DE NOTIFICACIONES
+// ==========================================
+// Protegemos la ruta porque contiene datos personales de los clientes
+app.get('/api/v1/notificaciones/recordatorios-hoy', verificarToken, (req, res) => notificationController.obtenerRecordatorios(req, res));
 
 // INICIAR EL SERVIDOR
 app.listen(PORT, () => {
