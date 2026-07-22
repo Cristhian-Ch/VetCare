@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Importar controladores y middlewares personalizados
+const paymentController = require('./pagos/payment-controller'); // MODULO DE PAGOS
 const notificationController = require('./notificaciones/notification-controller'); // MODULO NOTIFICACIONES
 const authController = require('./autenticacion/auth-controller'); // NUEVO MODULO AUTENTICACIÓN
 const petController = require('./gestion-mascotas/pet-controller'); // NUEVO MODULO DE MASCOTAS
@@ -65,6 +66,12 @@ app.post('/api/v1/auth/login', (req, res) => authController.login(req, res));
 // ==========================================
 // Protegemos la ruta porque contiene datos personales de los clientes
 app.get('/api/v1/notificaciones/recordatorios-hoy', verificarToken, (req, res) => notificationController.obtenerRecordatorios(req, res));
+
+// ==========================================
+// ENDPOINTS DE PAGOS
+// ==========================================
+app.post('/api/v1/pagos', verificarToken, (req, res) => paymentController.registrarPago(req, res));
+app.get('/api/v1/pagos', verificarToken, (req, res) => paymentController.obtenerPagos(req, res));
 
 // INICIAR EL SERVIDOR
 app.listen(PORT, () => {
