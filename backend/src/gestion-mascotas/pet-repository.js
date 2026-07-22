@@ -28,7 +28,15 @@ class PetRepository {
         };
     }
 
-    async listarTodos() {
+    async listarTodos(especie = null) {
+        // Si nos envían la especie, filtramos por coincidencias exactas
+        if (especie) {
+            const query = `SELECT * FROM t_mascota WHERE especie = ? ORDER BY nombre ASC`;
+            const [filas] = await pool.execute(query, [especie]);
+            return filas;
+        }
+
+        // Si no hay filtro, traemos todas las mascotas
         const query = `SELECT * FROM t_mascota ORDER BY nombre ASC`;
         const [filas] = await pool.execute(query);
         return filas;

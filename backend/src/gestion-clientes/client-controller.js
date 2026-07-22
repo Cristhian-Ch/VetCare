@@ -20,13 +20,18 @@ class ClientController {
         }
     }
 
-    async obtenerClientes(req, res) {
+async obtenerClientes(req, res) {
         try {
-            const clientes = await clientRepository.listarTodos();
+            // Capturamos el parámetro "q" de la URL (Query Params)
+            const { q } = req.query; 
+            
+            // Le pasamos el parámetro al repositorio (puede ser null si no envían nada)
+            const clientes = await clientRepository.listarTodos(q);
             
             res.status(200).json({
                 codigo: "SUCCESS",
-                mensaje: "Clientes recuperados exitosamente",
+                mensaje: q ? `Resultados de búsqueda para: ${q}` : "Clientes recuperados exitosamente",
+                total: clientes.length,
                 data: clientes
             });
         } catch (error) {

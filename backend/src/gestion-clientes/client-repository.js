@@ -30,7 +30,20 @@ class ClientRepository {
         };
     }
 
-    async listarTodos() {
+async listarTodos(terminoBusqueda = null) {
+        // Si nos envían una palabra para buscar, filtramos por nombre o correo
+        if (terminoBusqueda) {
+            const query = `
+                SELECT * FROM t_cliente 
+                WHERE nombre LIKE ? OR correo LIKE ? 
+                ORDER BY nombre ASC
+            `;
+            // Usamos % para que busque coincidencias parciales (ej. "car" encuentra "Carlos")
+            const [filas] = await pool.execute(query, [`%${terminoBusqueda}%`, `%${terminoBusqueda}%`]);
+            return filas;
+        }
+
+        // Si no hay búsqueda, traemos todos (comportamiento normal)
         const query = `SELECT * FROM t_cliente ORDER BY nombre ASC`;
         const [filas] = await pool.execute(query);
         return filas;

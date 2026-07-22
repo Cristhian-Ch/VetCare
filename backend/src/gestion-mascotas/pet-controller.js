@@ -13,8 +13,17 @@ class PetController {
 
     async obtenerMascotas(req, res) {
         try {
-            const mascotas = await petRepository.listarTodos();
-            res.status(200).json({ codigo: "SUCCESS", mensaje: "Mascotas recuperadas", data: mascotas });
+            // Capturamos el parámetro "especie" de la URL
+            const { especie } = req.query;
+            
+            const mascotas = await petRepository.listarTodos(especie);
+            
+            res.status(200).json({ 
+                codigo: "SUCCESS", 
+                mensaje: especie ? `Mascotas filtradas por especie: ${especie}` : "Mascotas recuperadas", 
+                total: mascotas.length,
+                data: mascotas 
+            });
         } catch (error) {
             console.error("Error al obtener mascotas:", error);
             res.status(500).json({ codigo: "ERR_INTERNAL", mensaje: "Error interno" });
