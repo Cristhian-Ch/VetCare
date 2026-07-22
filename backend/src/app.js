@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // Importar controladores y middlewares personalizados
+const historialController = require('./historial-clinico/historial-controller'); // MODULO DE HISTORIAL
 const paymentController = require('./pagos/payment-controller'); // MODULO DE PAGOS
 const notificationController = require('./notificaciones/notification-controller'); // MODULO NOTIFICACIONES
 const authController = require('./autenticacion/auth-controller'); // NUEVO MODULO AUTENTICACIÓN
@@ -72,6 +73,12 @@ app.get('/api/v1/notificaciones/recordatorios-hoy', verificarToken, (req, res) =
 // ==========================================
 app.post('/api/v1/pagos', verificarToken, (req, res) => paymentController.registrarPago(req, res));
 app.get('/api/v1/pagos', verificarToken, (req, res) => paymentController.obtenerPagos(req, res));
+
+// ==========================================
+// ENDPOINTS DE HISTORIAL CLÍNICO
+// ==========================================
+app.post('/api/v1/historial', verificarToken, (req, res) => historialController.registrarHistorial(req, res));
+app.get('/api/v1/historial/:mascotaId', verificarToken, (req, res) => historialController.obtenerHistorial(req, res));
 
 // INICIAR EL SERVIDOR
 app.listen(PORT, () => {
