@@ -22,7 +22,7 @@ class AppointmentRepository {
         await pool.execute(query, valores);
         
         return {
-            citald: citaId,
+            citaId: citaId,
             estado: 'creada',
             mascotaId: datosCita.mascotaId,
             fecha: datosCita.fecha,

@@ -10,15 +10,16 @@ app.use(cors());
 app.use(express.json());
 
 // Importar controladores y middlewares personalizados
-const historialController = require('./historial-clinico/historial-controller'); // MODULO DE HISTORIAL
-const paymentController = require('./pagos/payment-controller'); // MODULO DE PAGOS
-const notificationController = require('./notificaciones/notification-controller'); // MODULO NOTIFICACIONES
-const authController = require('./autenticacion/auth-controller'); // NUEVO MODULO AUTENTICACIÓN
-const petController = require('./gestion-mascotas/pet-controller'); // NUEVO MODULO DE MASCOTAS
+const historialController = require('./historial-clinico/historial-controller'); 
+const paymentController = require('./pagos/payment-controller'); 
+const notificationController = require('./notificaciones/notification-controller'); 
+const authController = require('./autenticacion/auth-controller'); 
+const petController = require('./gestion-mascotas/pet-controller'); 
 const appointmentController = require('./gestion-citas/appointment-controller');
-const clientController = require('./gestion-clientes/client-controller'); // NUEVO MODULO DE CLIENTES
-const { verificarToken } = require('./middlewares/auth-middleware');
+const clientController = require('./gestion-clientes/client-controller'); 
+const { verificarToken, soloAdmin } = require('./middlewares/auth-middleware');
 const { validarCreacionCita } = require('./middlewares/validation-middleware');
+
 
 
 // Endpoint público de prueba de salud
@@ -35,18 +36,12 @@ app.put('/api/v1/citas/:id', verificarToken, (req, res) => appointmentController
 app.delete('/api/v1/citas/:id', verificarToken, (req, res) => appointmentController.eliminarCita(req, res));
 
 // ==========================================
-// ENDPOINTS DEL MÓDULO DE CLIENTES (NUEVO)
-// ==========================================
-app.post('/api/v1/clientes', verificarToken, (req, res) => clientController.crearCliente(req, res));
-app.get('/api/v1/clientes', verificarToken, (req, res) => clientController.obtenerClientes(req, res));
-
-// ==========================================
 // ENDPOINTS DEL MÓDULO DE CLIENTES
 // ==========================================
 app.post('/api/v1/clientes', verificarToken, (req, res) => clientController.crearCliente(req, res));
 app.get('/api/v1/clientes', verificarToken, (req, res) => clientController.obtenerClientes(req, res));
-app.put('/api/v1/clientes/:id', verificarToken, (req, res) => clientController.actualizarCliente(req, res)); // NUEVA
-app.delete('/api/v1/clientes/:id', verificarToken, (req, res) => clientController.eliminarCliente(req, res)); // NUEVA
+app.put('/api/v1/clientes/:id', verificarToken, (req, res) => clientController.actualizarCliente(req, res)); 
+app.delete('/api/v1/clientes/:id', verificarToken, (req, res) => clientController.eliminarCliente(req, res)); 
 
 // ==========================================
 // ENDPOINTS DEL MÓDULO DE MASCOTAS 
@@ -60,7 +55,15 @@ app.delete('/api/v1/mascotas/:id', verificarToken, (req, res) => petController.e
 // ENDPOINTS DE AUTENTICACIÓN (Públicos)
 // ==========================================
 app.post('/api/v1/auth/registro', (req, res) => authController.registrar(req, res));
-app.post('/api/v1/auth/login', (req, res) => authController.login(req, res));
+app.post('/api/v1/auth/login',    (req, res) => authController.login(req, res));
+
+// ==========================================
+// ENDPOINTS DE GESTIÓN DE USUARIOS (solo admin)
+// ==========================================
+app.get('/api/v1/usuarios',     verificarToken, soloAdmin, (req, res) => authController.listarUsuarios(req, res));
+app.put('/api/v1/usuarios/:id', verificarToken, soloAdmin, (req, res) => authController.actualizarUsuario(req, res));
+app.delete('/api/v1/usuarios/:id', verificarToken, soloAdmin, (req, res) => authController.eliminarUsuario(req, res));
+
 
 // ==========================================
 // ENDPOINTS DE NOTIFICACIONES
